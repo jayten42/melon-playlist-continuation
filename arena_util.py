@@ -10,7 +10,7 @@ import numpy as np
 
 def write_json(data, fname):
     def _conv(o):
-        if isinstance(o, np.int64):
+        if isinstance(o, np.int32) or isinstance(o, np.int64):
             return int(o)
         raise TypeError
 
@@ -22,7 +22,7 @@ def write_json(data, fname):
 
 
 def load_json(fname):
-    with open(fname) as f:
+    with open(fname, encoding="UTF-8") as f:
         json_obj = json.load(f)
 
     return json_obj
