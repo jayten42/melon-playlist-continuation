@@ -78,20 +78,20 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, question_fname):
     id_to_tag = load_json(id_to_tag_fname)
     print("Loading train file...")
     mlb_songs = MultiLabelBinarizer(classes=np.arange(707989))
-    mlb_tags = MultiLabelBinarizer(classes=np.arange(30653))
+    mlb_tags = MultiLabelBinarizer(classes=np.arange(30653), sparse_output=True)
     train_data = load_json(train_fname)
     for ply in train_data:
         ply['tags'] = [tag_to_id[tag] for tag in ply['tags']]
     train_songs = mlb_songs.fit_transform([ply['songs'] for ply in train_data])
     train_tags = mlb_tags.fit_transform([ply['tags'] for ply in train_data])
-    x_train = [tf.concat([songs, tags], 1) for songs, tags in zip(train_songs, train_tags)]
+    x_train = [songs for songs, tags in zip(train_songs, train_tags)]
     print("Loading question file...")
     questions = load_json(question_fname)
     for ply in questions:
         ply['tags'] = [tag_to_id[tag] for tag in ply['tags']]
     test_songs = mlb_songs.fit_transform([ply['songs'] for ply in questions])
     test_tags = mlb_tags.fit_transform([ply['tags'] for ply in questions])
-    x_test = [tf.concat([songs, tags], 1) for songs, tags in zip(test_songs, test_tags)]
+    x_test = [songs for songs, tags in zip(test_songs, test_tags)]
     # print("Writing answers...")
     # answers = self._generate_answers(song_meta_json, train_data, questions)
     # write_json(answers, "results/results.json")
@@ -99,7 +99,7 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, question_fname):
 
     training_dataset = tf.data.Dataset.from_tensor_slices(x_train).batch(256)
 
-    model = AutoEncoder(intermediate_dim=128, original_dim=707989+30653)
+    model = AutoEncoder(intermediate_dim=128, original_dim=707989)#+30653)
     opt = tf.keras.optimizers.Adam(learning_rate=1e-2)
     print("Train Loop...")
 
@@ -109,10 +109,10 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, question_fname):
     preds = model(x_test)
 
     pred_songs = preds[:, :707989]
-    pred_tags = [id_to_tag[idx] for idx in preds[:, 707989:]]
+    #pred_tags = [id_to_tag[idx] for idx in preds[:, 707989:]]
 
     print(pred_songs)
-    print(pred_tags)
+    #print(pred_tags)
 
 
 if __name__ == "__main__":
