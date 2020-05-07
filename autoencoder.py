@@ -62,9 +62,9 @@ def train(loss, model, opt, original):
 
 
 def train_loop(model, opt, loss, dataset, epochs):
-    for epoch in tqdm(range(epochs)):
+    for epoch in range(epochs):
         epoch_loss = 0
-        for step, batch_featrues in enumerate(tqdm(dataset)):
+        for step, batch_featrues in enumerate(dataset):
             loss_values = train(loss, model, opt, batch_featrues)
             epoch_loss += loss_values
         model.loss.append(epoch_loss)
