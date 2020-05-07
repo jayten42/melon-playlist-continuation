@@ -62,7 +62,7 @@ def train(loss, model, opt, original):
 
 
 def train_loop(model, opt, loss, dataset, epochs):
-    for epoch in tqdm_notebook(range(epochs)):
+    for epoch in range(epochs):
         epoch_loss = 0
         for step, batch_featrues in enumerate(dataset):
             loss_values = train(loss, model, opt, batch_featrues)
