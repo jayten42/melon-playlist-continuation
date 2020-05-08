@@ -13,7 +13,7 @@ from arena_util import write_json
 
 class Encoder(tf.keras.layers.Layer):
     def __init__(self, intermediate_dim):
-        super(Encoder ,self).__init__()
+        super(Encoder, self).__init__()
         self.hidden_layer = tf.keras.layers.Dense(units=intermediate_dim, activation=tf.nn.relu)
         self.output_layer = tf.keras.layers.Dense(units=intermediate_dim, activation=tf.nn.relu)
 
@@ -105,6 +105,7 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, test_fname):
             songs[x['songs']] = 1
             tags[x['tags']] = 1
             yield np.concatenate([songs, tags])
+
     training_dataset = tf.data.Dataset.from_generator(generator=train_generator, output_types=tf.float32,
                                                       output_shapes=tf.TensorShape([707989+30653])).batch(256)
     test_dataset = tf.data.Dataset.from_generator(generator=test_generator, output_types=tf.float32,
@@ -115,15 +116,16 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, test_fname):
     print("Train Loop...")
 
     train_loop(model, opt, loss, training_dataset, 20)
-    # print("Predict...")
+    print("Predict...")
     #
-    # preds = model(x_test)
+    preds = model(test_dataset)
     #
-    # pred_songs = preds[:, :707989]
-    # pred_tags = [id_to_tag[idx] for idx in preds[:, 707989:]]
+    pred_songs = preds[:, :707989]
+    pred_tags = [id_to_tag[idx] for idx in preds[:, 707989:]]
     #
-    # print(pred_songs)
-    # print(pred_tags)
+    print(pred_songs)
+    print(pred_tags)
+    model.save('saved_model')
 
 
 if __name__ == "__main__":
