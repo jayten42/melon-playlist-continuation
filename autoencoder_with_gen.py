@@ -37,8 +37,10 @@ class DataGenerator(Sequence):
             if self.noisy:
                 songs = np.random.choice(songs, int(len(songs)/2))
                 tags = np.random.choice(tags, int(len(tags)/2))
-            x_songs[songs] = 1
-            x_tags[tags] = 1
+            if songs:
+                x_songs[songs] = 1
+            if tags:
+                x_tags[tags] = 1
             train.append(np.concatenate([x_songs, x_tags]))
             test.append(np.concatenate([y_songs, y_tags]))
         return np.array(train), np.array(test)
