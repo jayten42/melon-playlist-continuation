@@ -118,7 +118,7 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, test_fname):
     model = AutoEncoder(hidden_dim=128, orig_dim=707989+30653)
     model.compile(optimizer=keras.optimizers.Adam())
     print("Train Loop...")
-    model.fit(train_gen, epochs=20, validation_data=test_gen)
+    model.fit(train_gen, epochs=20)  # TODO validation_data epoch 주기 변경 혹은 없애기
     model.save('saved_model')
     print("Predict...")
     #
