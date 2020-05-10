@@ -85,7 +85,7 @@ class AutoEncoder(tf.keras.Model):
         with tf.GradientTape() as tape:
             encode = self.encoder(data)
             decode = self.decoder(encode)
-            loss = tf.reduce_mean(keras.losses.binary_crossentropy(data, decode))
+            loss = tf.reduce_mean(keras.losses.mse(data, decode))
         grads = tape.gradient(loss, self.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.trainable_weights))
         return {
