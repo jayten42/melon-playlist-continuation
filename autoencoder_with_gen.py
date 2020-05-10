@@ -12,7 +12,7 @@ from tensorflow.keras.utils import Sequence
 
 
 class DataGenerator(Sequence):
-    def __init__(self, data, batch_size=256, noisy=False, shuffle=True):
+    def __init__(self, data, batch_size=1024, noisy=False, shuffle=True):
         self.data = data
         self.batch_size = batch_size
         self.noisy = noisy
