@@ -8,7 +8,7 @@ from tensorflow import keras
 from tqdm import tqdm
 from arena_util import load_json
 from arena_util import write_json
-from tensorflow.keras.utils import Sequence
+from tensorflow.python.keras.utils.data_utils import Sequence
 
 
 class DataGenerator(Sequence):
@@ -85,7 +85,7 @@ class AutoEncoder(tf.keras.Model):
         with tf.GradientTape() as tape:
             encode = self.encoder(data)
             decode = self.decoder(encode)
-            loss = tf.reduce_mean(keras.losses.mse(data, decode))
+            loss = tf.reduce_mean(keras.losses.binary_crossentropy(data, decode))
         grads = tape.gradient(loss, self.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.trainable_weights))
         return {
@@ -118,7 +118,7 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, test_fname):
     model = AutoEncoder(hidden_dim=128, orig_dim=707989+30653)
     model.compile(optimizer=keras.optimizers.Adam())
     print("Train Loop...")
-    model.fit(train_gen, epochs=20)  # TODO validation_data epoch 주기 변경 혹은 없애기
+    model.fit(train_gen, epochs=1)  # TODO validation_data epoch 주기 변경 혹은 없애기
     model.save('saved_model')
     print("Predict...")
     #
@@ -129,7 +129,6 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, test_fname):
     #
     print(pred_songs)
     print(pred_tags)
-
 
 
 if __name__ == "__main__":
