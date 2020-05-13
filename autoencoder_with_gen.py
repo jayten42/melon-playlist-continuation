@@ -11,6 +11,11 @@ from arena_util import write_json
 from tensorflow.python.keras.utils.data_utils import Sequence
 
 
+# def fast_mse_loss(w, h, y):
+#     #Q = W.t * W
+#     # h.t (Q * h - 2*W.t*y) + y.t*t
+#
+
 class DataGenerator(Sequence):
     def __init__(self, data, batch_size=256, noisy=False, shuffle=True):
         self.data = data
@@ -85,7 +90,9 @@ class AutoEncoder(tf.keras.Model):
         with tf.GradientTape() as tape:
             encode = self.encoder(data)
             decode = self.decoder(encode)
-            loss = tf.reduce_mean(keras.losses.binary_crossentropy(data, decode))
+            weights = self.get_weights()
+
+            loss = tf.reduce_mean(keras.losses.mse(data, decode))
         grads = tape.gradient(loss, self.trainable_weights)
         self.optimizer.apply_gradients(zip(grads, self.trainable_weights))
         return {
@@ -119,17 +126,17 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, test_fname):
     model.compile(optimizer=keras.optimizers.Adam())
     print("Train Loop...")
     model.fit(train_gen, epochs=1)  # TODO validation_data epoch 주기 변경 혹은 없애기
-    model.save('saved_model')
-    print("Predict...")
-    #
-    preds = model(test_gen)
-    #
-    pred_songs = preds[:, :707989]
-    pred_tags = [id_to_tag[idx] for idx in preds[:, 707989:]]
-    #
-    print(pred_songs)
-    print(pred_tags)
+    # model.save('saved_model')
+    # print("Predict...")
+    # #
+    # preds = model(test_gen)
+    # #
+    # pred_songs = preds[:, :707989]
+    # pred_tags = [id_to_tag[idx] for idx in preds[:, 707989:]]
+    # #
+    # print(pred_songs)
+    # print(pred_tags)
 
-
+    print(model.get_weights())
 if __name__ == "__main__":
     fire.Fire()
