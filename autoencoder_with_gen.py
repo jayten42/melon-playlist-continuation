@@ -90,7 +90,7 @@ class AutoEncoder(tf.keras.Model):
         with tf.GradientTape() as tape:
             encode = self.encoder(data)
             decode = self.decoder(encode)
-            weights = self.get_weights()
+            weights = self.decoder.get_weights()
 
             loss = tf.reduce_mean(keras.losses.mse(data, decode))
         grads = tape.gradient(loss, self.trainable_weights)
@@ -137,6 +137,6 @@ def run(tag_to_id_fname, id_to_tag_fname, train_fname, test_fname):
     # print(pred_songs)
     # print(pred_tags)
 
-    print(model.get_weights())
+    print(model.decoder.get_weights())
 if __name__ == "__main__":
     fire.Fire()
